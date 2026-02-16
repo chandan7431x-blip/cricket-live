@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Controller</title>
+<style>
+body{background:#111;color:white;font-family:Arial;text-align:center;}
+button{width:90%;padding:20px;margin:10px;font-size:22px;}
+</style>
+</head>
+<body>
+
+<h2>Live Controller</h2>
+
+<button onclick="addRun(1)">+1</button>
+<button onclick="addRun(4)">FOUR</button>
+<button onclick="addRun(6)">SIX</button>
+<button onclick="addWicket()">WICKET</button>
+<button onclick="reset()">RESET</button>
+
+<script src="https://cdn.jsdelivr.net/npm/firebase@8.10.0/firebase.js"></script>
+<script>
+var firebaseConfig = {
+apiKey: "YOUR_API_KEY",
+authDomain: "YOUR_PROJECT.firebaseapp.com",
+databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+projectId: "YOUR_PROJECT",
+storageBucket: "YOUR_PROJECT.appspot.com",
+messagingSenderId: "123456",
+appId: "APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+
+var db = firebase.database();
+
+function addRun(r){
+db.ref("match").once("value").then(function(snapshot){
+let data=snapshot.val()||{runs:0,wickets:0,balls:0};
+data.runs+=r;
+data.balls++;
+if(r==4) data.animation={text:"FOUR",color:"yellow"};
+if(r==6) data.animation={text:"SIX",color:"orange"};
+db.ref("match").set(data);
+});
+}
+
+function addWicket(){
+db.ref("match").once("value").then(function(snapshot){
+let data=snapshot.val()||{runs:0,wickets:0,balls:0};
+data.wickets++;
+data.balls++;
+data.animation={text:"WICKET",color:"red"};
+db.ref("match").set(data);
+});
+}
+
+function reset(){
+db.ref("match").set({runs:0,wickets:0,balls:0});
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Overlay</title>
+<style>
+body{margin:0;background:transparent;font-family:Arial;color:white;}
+.scoreboard{background:rgba(0,0,0,0.85);padding:15px;display:flex;justify-content:space-between;font-size:28px;}
+.animation{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);font-size:90px;font-weight:bold;display:none;}
+</style>
+</head>
+<body>
+
+<div class="scoreboard">
+<div id="team">TEAM A</div>
+<div id="score">0/0</div>
+<div id="overs">0.0</div>
+</div>
+
+<div id="anim" class="animation"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/firebase@8.10.0/firebase.js"></script>
+<script>
+var firebaseConfig = {
+apiKey: "YOUR_API_KEY",
+authDomain: "YOUR_PROJECT.firebaseapp.com",
+databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+projectId: "YOUR_PROJECT",
+storageBucket: "YOUR_PROJECT.appspot.com",
+messagingSenderId: "123456",
+appId: "APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+
+var db = firebase.database();
+
+db.ref("match").on("value", function(snapshot){
+var data = snapshot.val();
+if(!data) return;
+
+document.getElementById("score").innerText =
+data.runs + "/" + data.wickets;
+
+document.getElementById("overs").innerText =
+Math.floor(data.balls/6) + "." + (data.balls%6);
+
+if(data.animation){
+showAnim(data.animation.text,data.animation.color);
+db.ref("match/animation").set(null);
+}
+});
+
+function showAnim(text,color){
+let anim=document.getElementById("anim");
+anim.innerText=text;
+anim.style.color=color;
+anim.style.display="block";
+setTimeout(()=>{anim.style.display="none"},2000);
+}
+</script>
+
+</body>
+</html>
